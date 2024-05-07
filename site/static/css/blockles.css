@@ -1,0 +1,21 @@
+/* Yep, gonna roll styles by hand, Web 1.0 style */
+@font-face {
+  font-family: "Oxanium";
+  src: url("/fonts/Oxanium-VariableFont_wght.ttf");
+}
+
+.home-splash {
+  margin: 0px;
+  width: 100vw;
+  height: 100vh;
+  background-image: url("/images/grid2.jpg");
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: "Oxanium";
+  font-optical-sizing: auto;
+  font-style: normal;
+  color: white;
+}

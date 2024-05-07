@@ -22,3 +22,6 @@ go.work
 
 # Not sure I want my TODO list public at the moment lol
 TODO.md
+/blockles
+/site/static/images/
+/site/static/fonts/
