@@ -19,3 +19,45 @@
   font-style: normal;
   color: white;
 }
+
+.home-splash h1 {
+  font-size: 208px;
+  font-weight: 350;
+}
+
+.home-buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  margin: 30px;
+}
+
+.game-button {
+  background-color: #36A9AE;
+  background-image: linear-gradient(#37ADB2, #329CA0);
+  border: 1px solid #2A8387;
+  border-radius: 4px;
+  box-shadow: rgba(0, 0, 0, 0.12) 0 1px 1px;
+  color: #FFFFFF;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 100%;
+  margin: 0;
+  outline: 0;
+  padding: 11px 15px 12px;
+  text-align: center;
+  transition: box-shadow .05s ease-in-out,opacity .05s ease-in-out;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.game-button a {
+  color: white;
+  text-decoration: none;
+}
+
+.game-button a:visited {
+  color: lightgray;
+  text-decoration: none;
+}
