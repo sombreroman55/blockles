@@ -1,4 +1,4 @@
-package site
+package main
 
 import (
 	"io"
@@ -23,7 +23,7 @@ func (t *Templates) Render(w io.Writer, name string, data interface{}, c echo.Co
 	return t.templates.ExecuteTemplate(w, name, data)
 }
 
-func ServeBlockles() {
+func serveBlockles() {
 	log.Println("Serving Blockles site")
 	e := echo.New()
 	e.Use(middleware.Logger())
