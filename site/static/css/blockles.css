@@ -6,6 +6,7 @@
 
 /* Background image */
 body {
+  margin: 0px;
   width: 100vw;
   height: 100vh;
   background-image: url("/images/grid2.jpg");
@@ -14,7 +15,6 @@ body {
 
 /* ------- index.html stylings -------- */
 .home-splash {
-  margin: 0px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -26,7 +26,7 @@ body {
 }
 
 .home-splash h1 {
-  font-size: 208px;
+  font-size: 13vw;
   font-weight: 350;
 }
 
@@ -67,7 +67,39 @@ body {
 /* ------- solo.html stylings -------- */
 .options-form {
   display: flex;
+  height: 100%;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
+  font-family: sans;
+  font-size: 18px;
   color: white;
+}
+
+.options-form h2 {
+  font-size: 36px;
+  font-family: "Oxanium";
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+.options-form input[type=submit] {
+  background-color: #36A9AE;
+  background-image: linear-gradient(#37ADB2, #329CA0);
+  border: 1px solid #2A8387;
+  border-radius: 4px;
+  box-shadow: rgba(0, 0, 0, 0.12) 0 1px 1px;
+  color: #FFFFFF;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 100%;
+  margin: 25px;
+  outline: 0;
+  padding: 11px 15px 12px;
+  text-align: center;
+  transition: box-shadow .05s ease-in-out,opacity .05s ease-in-out;
+  user-select: none;
+  -webkit-user-select: none;
+  color: white;
+  text-decoration: none;
 }
