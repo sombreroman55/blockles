@@ -1,0 +1,30 @@
+{{ block "sologame" . }}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{{ .Title }}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="/css/blockles.css" rel="stylesheet" />
+    <script src="https://unpkg.com/htmx.org@1.9.11" integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="solo-game-screen">
+      <h1>{{ .Title }}</h1>
+      <canvas class="player-field" id="canvas-{{ .Id }}">No canvas support :(</canvas>
+      <div class="player-info">
+        <div id="score"></div>
+        <div id="level"></div>
+        <div id="linesCleared"></div>
+      </div>
+    </div>
+    <script>
+      const gameId = {{ .Id }};
+    </script>
+    <script defer src="/js/blockles.js"></script>
+  </body>
+</html>
+{{ end }}
+
+{{ block "sologamepause" . }}
+{{ end }}

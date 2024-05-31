@@ -1,13 +1,19 @@
 package main
 
 import (
-	"io"
-	"html/template"
-	"net/http"
-	log "github.com/sirupsen/logrus"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	log "github.com/sirupsen/logrus"
+	"html/template"
+	"io"
+	"net/http"
 )
+
+type GameInfo struct {
+	Title string
+	Id    string
+}
 
 type Templates struct {
 	templates *template.Template
@@ -21,6 +27,14 @@ func newTemplates() *Templates {
 
 func (t *Templates) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	return t.templates.ExecuteTemplate(w, name, data)
+}
+
+func handleHomeGet(c echo.Context) error {
+	return c.Render(http.StatusOK, "index", nil)
+}
+
+func handleNewSoloGet(c echo.Context) error {
+	return c.Render(http.StatusOK, "newsolo", nil)
 }
 
 func handleNewSoloPost(c echo.Context) error {
@@ -42,7 +56,36 @@ func handleNewSoloPost(c echo.Context) error {
 	log.Printf("debug: %v\n", debug)
 
 	// TODO: Hook up to game logic here to kick off solo game
-	return c.Render(http.StatusOK, "newsolorecv", title)
+	gameId := uuid.New()
+	gameUrl := "/solo?id=" + gameId.String()
+	c.Response().Header().Set("HX-Redirect", gameUrl)
+	c.Response().WriteHeader(303)
+	return nil
+}
+
+func handleNewMultiGet(c echo.Context) error {
+	// TODO: Implement
+	return c.Render(http.StatusOK, "newsolo", nil)
+}
+
+func handleNewMultiPost(c echo.Context) error {
+	// TODO: Implement
+	return c.Render(http.StatusOK, "newsolorecv", nil)
+}
+
+func handleSoloGameGet(c echo.Context) error {
+	gameInfo := GameInfo{
+		Title: "test game",
+		Id: c.QueryParam("id"),
+	}
+	return c.Render(http.StatusOK, "sologame", gameInfo)
+}
+
+func gameExists(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		log.Printf("Game id: %s\n", c.QueryParam("id"))
+		return next(c)
+	}
 }
 
 func serveBlockles() {
@@ -50,14 +93,16 @@ func serveBlockles() {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Static("/", "site/static")
-	e.GET("/", func(c echo.Context) error {
-		return c.Render(http.StatusOK, "index", nil)
-	})
+	e.GET("/", handleHomeGet)
 
-	e.GET("/newsolo", func(c echo.Context) error {
-		return c.Render(http.StatusOK, "newsolo", nil)
-	})
+	e.GET("/newsolo", handleNewSoloGet)
 	e.POST("/newsolo", handleNewSoloPost)
+
+	e.GET("/solo", handleSoloGameGet, gameExists)
+
+	// TODO: Remaining routes to implement
+	e.GET("/newmulti", handleNewMultiGet)
+	e.POST("/newmulti", handleNewMultiPost)
 
 	e.Renderer = newTemplates()
 	e.Logger.Fatal(e.Start(":8000"))
