@@ -103,3 +103,22 @@ body {
   color: white;
   text-decoration: none;
 }
+
+/* */
+.solo-game-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: white;
+}
+
+.player-field {
+  height: 80vh;
+  width: 40vh;
+}
+
+.player-info {
+  flex-direction: row;
+}
