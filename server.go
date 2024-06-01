@@ -29,6 +29,34 @@ func (t *Templates) Render(w io.Writer, name string, data interface{}, c echo.Co
 	return t.templates.ExecuteTemplate(w, name, data)
 }
 
+func handleWstestGet(c echo.Context) error {
+	return c.Render(200, "wstest", nil)
+}
+
+func handleChatGet(c echo.Context) error {
+	conn, err := upgrader.Upgrade(c.Response().Writer, c.Request(), nil)
+	if err != nil {
+		log.Error("upgrade:", err)
+		return err
+	}
+	defer conn.Close()
+	for {
+		mt, message, err := conn.ReadMessage()
+		if err != nil {
+			log.Error("read:", err)
+			break
+		}
+
+		log.Printf("recv: %s, type: %d", message, mt)
+		err = conn.WriteMessage(mt, message)
+		if err != nil {
+			log.Error("write:", err)
+			break
+		}
+	}
+	return err
+}
+
 func handleHomeGet(c echo.Context) error {
 	return c.Render(http.StatusOK, "index", nil)
 }
@@ -65,12 +93,12 @@ func handleNewSoloPost(c echo.Context) error {
 
 func handleNewMultiGet(c echo.Context) error {
 	// TODO: Implement
-	return c.Render(http.StatusOK, "newsolo", nil)
+	return nil
 }
 
 func handleNewMultiPost(c echo.Context) error {
 	// TODO: Implement
-	return c.Render(http.StatusOK, "newsolorecv", nil)
+	return nil
 }
 
 func handleSoloGameGet(c echo.Context) error {
@@ -90,6 +118,9 @@ func gameExists(next echo.HandlerFunc) echo.HandlerFunc {
 
 func serveBlockles() {
 	log.Println("Serving Blockles site")
+	hub := newHub()
+	go hub.run()
+
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Static("/", "site/static")
@@ -99,6 +130,10 @@ func serveBlockles() {
 	e.POST("/newsolo", handleNewSoloPost)
 
 	e.GET("/solo", handleSoloGameGet, gameExists)
+
+	e.GET("/wstest", handleWstestGet)
+	e.GET("/ws", serveWs(hub))
+	e.GET("/chat", handleChatGet)
 
 	// TODO: Remaining routes to implement
 	e.GET("/newmulti", handleNewMultiGet)
