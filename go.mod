@@ -4,6 +4,7 @@ go 1.22.2
 
 require (
 	github.com/google/uuid v1.6.0
+	github.com/gorilla/websocket v1.5.1
 	github.com/labstack/echo/v4 v4.12.0
 	github.com/sirupsen/logrus v1.9.3
 )
