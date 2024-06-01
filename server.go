@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/google/uuid"
-	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	log "github.com/sirupsen/logrus"
@@ -20,8 +19,6 @@ type Templates struct {
 	templates *template.Template
 }
 
-var upgrader = websocket.Upgrader{} // use default options
-
 func newTemplates() *Templates {
 	return &Templates{
 		templates: template.Must(template.ParseGlob("site/pages/*.html")),
@@ -33,10 +30,10 @@ func (t *Templates) Render(w io.Writer, name string, data interface{}, c echo.Co
 }
 
 func handleWstestGet(c echo.Context) error {
-	return c.Render(200, "wstest", "ws://"+c.Request().Host+"/echo")
+	return c.Render(200, "wstest", nil)
 }
 
-func handleEchoGet(c echo.Context) error {
+func handleChatGet(c echo.Context) error {
 	conn, err := upgrader.Upgrade(c.Response().Writer, c.Request(), nil)
 	if err != nil {
 		log.Error("upgrade:", err)
@@ -121,6 +118,9 @@ func gameExists(next echo.HandlerFunc) echo.HandlerFunc {
 
 func serveBlockles() {
 	log.Println("Serving Blockles site")
+	hub := newHub()
+	go hub.run()
+
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Static("/", "site/static")
@@ -132,7 +132,8 @@ func serveBlockles() {
 	e.GET("/solo", handleSoloGameGet, gameExists)
 
 	e.GET("/wstest", handleWstestGet)
-	e.GET("/echo", handleEchoGet)
+	e.GET("/ws", serveWs(hub))
+	e.GET("/chat", handleChatGet)
 
 	// TODO: Remaining routes to implement
 	e.GET("/newmulti", handleNewMultiGet)
