@@ -117,7 +117,12 @@ func handleSoloGameGet(c echo.Context) error {
 	return c.Render(http.StatusOK, "sologame", gameInfo)
 }
 
+func handleMultiGameGet(c echo.Context) error {
+	return nil
+}
+
 func gameExists(next echo.HandlerFunc) echo.HandlerFunc {
+	// TODO: Implement this for real
 	return func(c echo.Context) error {
 		log.Printf("Game id: %s\n", c.QueryParam("id"))
 		return next(c)
@@ -138,6 +143,7 @@ func serveBlockles() {
 	e.POST("/newsolo", handleNewSoloPost)
 
 	e.GET("/solo", handleSoloGameGet, gameExists)
+	e.GET("/multi", handleMultiGameGet, gameExists)
 
 	e.GET("/wstest", handleWstestGet)
 	e.GET("/ws", serveWs(hub))
