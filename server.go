@@ -1,13 +1,15 @@
 package main
 
 import (
+	"html/template"
+	"io"
+	"net/http"
+
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	log "github.com/sirupsen/logrus"
-	"html/template"
-	"io"
-	"net/http"
+	"github.com/sombreroman55/blockles/game"
 )
 
 type GameInfo struct {
@@ -112,7 +114,7 @@ func handleNewMultiPost(c echo.Context) error {
 func handleSoloGameGet(c echo.Context) error {
 	gameInfo := GameInfo{
 		Title: "test game",
-		Id: c.QueryParam("id"),
+		Id:    c.QueryParam("id"),
 	}
 	return c.Render(http.StatusOK, "sologame", gameInfo)
 }
@@ -153,5 +155,6 @@ func serveBlockles() {
 	e.POST("/newmulti", handleNewMultiPost)
 
 	e.Renderer = newTemplates()
+	game.InitGameManager()
 	e.Logger.Fatal(e.Start(":8000"))
 }
