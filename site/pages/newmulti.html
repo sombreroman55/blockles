@@ -1,0 +1,80 @@
+{{ block "newmulti" . }}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Blockles v3 - New Multiplayer Game</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/css/blockles.css" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <form class="options-form" hx-post="/newmulti">
+      <div>
+        <label>Game Title</label>
+        <input type="text" name="gameTitle" placeholder="My Blockles Game">
+      </div>
+      <div>
+        <label>Nickname</label>
+        <input type="text" name="playerName" placeholder="Give yourself a name!">
+      </div>
+      <h2>Multiplayer Game Options</h2>
+      <table>
+        <tr>
+          <td><input type="checkbox" id="showGhostPiece" name="showGhostPiece" checked><label for="showGhostPiece">Show Ghost Piece</label></td>
+          <td><input type="checkbox" id="showNextQueue" name="showNextQueue" checked><label for="showNextQueue">Show Next Queue</label></td>
+          <td><input type="checkbox" id="allowHold" name="allowHold" checked><label for="allowHold">Enable Piece Holding</label></td>
+          <td><input type="checkbox" id="friendlyFire" name="friendlyFire" checked><label for="friendlyFire">Friendly Fire</label></td>
+        </tr>
+      </table>
+      <div>
+        <label for="itemFrequency">Item Frequency: </label>
+        <select name="itemFrequency" id="itemFrequency">
+          <option value="0">None</option>
+          <option value="1">Low</option>
+          <option value="2">Medium</option>
+          <option value="3">High</option>
+        </select>
+      </div>
+      <h2>Offense Items</h2>
+      <table>
+        <tr>
+          <td><input type="checkbox" id="linesPlus1" name="linesPlus1" checked><label for="linesPlus1">Lines +1</label></td>
+          <td><input type="checkbox" id="linesPlus2" name="linesPlus2" checked><label for="linesPlus2">Lines +2</label></td>
+          <td><input type="checkbox" id="linesPlus3" name="linesPlus3" checked><label for="linesPlus3">Lines +3</label></td>
+          <td><input type="checkbox" id="linesPlus4" name="linesPlus4" checked><label for="linesPlus4">Lines +4</label></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" id="scramble" name="scramble" checked><label for="scramble">Scramble</label></td>
+          <td><input type="checkbox" id="attackUp" name="attackUp" checked><label for="attackUp">Attack Up</label></td>
+          <td><input type="checkbox" id="swap" name="swap" checked><label for="swap">Swap</label></td>
+          <td><input type="checkbox" id="assassin" name="assassin" checked><label for="assassin">Assassin</label></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" id="blind" name="blind" checked><label for="blind">Blind</label></td>
+          <td><input type="checkbox" id="poison" name="poison" checked><label for="poison">Poison</label></td>
+          <td><input type="checkbox" id="famine" name="famine" checked><label for="famine">Famine</label></td>
+          <td><input type="checkbox" id="mirror" name="mirror" checked><label for="mirror">Mirror</label></td>
+        </tr>
+      </table>
+      <h2>Defense Items</h2>
+      <table>
+        <tr>
+          <td><input type="checkbox" id="linesMinus1" name="linesMinus1" checked><label for="linesMinus1">Lines -1</label></td>
+          <td><input type="checkbox" id="linesMinus2" name="linesMinus2" checked><label for="linesMinus2">Lines -2</label></td>
+          <td><input type="checkbox" id="linesMinus3" name="linesMinus3" checked><label for="linesMinus3">Lines -3</label></td>
+          <td><input type="checkbox" id="linesMinus4" name="linesMinus4" checked><label for="linesMinus4">Lines -4</label></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" id="shield" name="shield" checked><label for="shield">Shield</label></td>
+          <td><input type="checkbox" id="defenseUp" name="defenseUp" checked><label for="defenseUp">Defense Up</label></td>
+          <td><input type="checkbox" id="envy" name="envy" checked><label for="envy">Envy</label></td>
+          <td><input type="checkbox" id="clearBoard" name="clearBoard" checked><label for="clearBoard">Clear Board</label></td>
+        </tr>
+      </table>
+      <br>
+      <input type="submit" value="Create New Multiplayer Game">
+    </form>
+  </body>
+</html>
+{{ end }}

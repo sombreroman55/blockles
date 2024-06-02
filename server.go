@@ -70,18 +70,12 @@ func handleNewSoloPost(c echo.Context) error {
 	ghost := c.FormValue("showGhostPiece") == "on"
 	next := c.FormValue("showNextQueue") == "on"
 	hold := c.FormValue("allowHold") == "on"
-	crot := c.FormValue("classicRotation") == "on"
-	clock := c.FormValue("classicLockdown") == "on"
-	debug := c.FormValue("debug") == "on"
 
 	log.Printf("Options for game %s\n", title)
 	log.Println("---------------------------")
 	log.Printf("ghost: %v\n", ghost)
 	log.Printf("next:  %v\n", next)
 	log.Printf("hold:  %v\n", hold)
-	log.Printf("crot:  %v\n", crot)
-	log.Printf("clock: %v\n", clock)
-	log.Printf("debug: %v\n", debug)
 
 	// TODO: Hook up to game logic here to kick off solo game
 	gameId := uuid.New()
@@ -92,12 +86,26 @@ func handleNewSoloPost(c echo.Context) error {
 }
 
 func handleNewMultiGet(c echo.Context) error {
-	// TODO: Implement
-	return nil
+	return c.Render(http.StatusOK, "newmulti", nil)
 }
 
 func handleNewMultiPost(c echo.Context) error {
-	// TODO: Implement
+	title := c.FormValue("gameTitle")
+	ghost := c.FormValue("showGhostPiece") == "on"
+	next := c.FormValue("showNextQueue") == "on"
+	hold := c.FormValue("allowHold") == "on"
+
+	log.Printf("Options for game %s\n", title)
+	log.Println("---------------------------")
+	log.Printf("ghost: %v\n", ghost)
+	log.Printf("next:  %v\n", next)
+	log.Printf("hold:  %v\n", hold)
+
+	// TODO: Hook up to game logic here to kick off solo game
+	gameId := uuid.New()
+	gameUrl := "/multi?id=" + gameId.String()
+	c.Response().Header().Set("HX-Redirect", gameUrl)
+	c.Response().WriteHeader(303)
 	return nil
 }
 
@@ -109,7 +117,12 @@ func handleSoloGameGet(c echo.Context) error {
 	return c.Render(http.StatusOK, "sologame", gameInfo)
 }
 
+func handleMultiGameGet(c echo.Context) error {
+	return nil
+}
+
 func gameExists(next echo.HandlerFunc) echo.HandlerFunc {
+	// TODO: Implement this for real
 	return func(c echo.Context) error {
 		log.Printf("Game id: %s\n", c.QueryParam("id"))
 		return next(c)
@@ -130,12 +143,12 @@ func serveBlockles() {
 	e.POST("/newsolo", handleNewSoloPost)
 
 	e.GET("/solo", handleSoloGameGet, gameExists)
+	e.GET("/multi", handleMultiGameGet, gameExists)
 
 	e.GET("/wstest", handleWstestGet)
 	e.GET("/ws", serveWs(hub))
 	e.GET("/chat", handleChatGet)
 
-	// TODO: Remaining routes to implement
 	e.GET("/newmulti", handleNewMultiGet)
 	e.POST("/newmulti", handleNewMultiPost)
 
