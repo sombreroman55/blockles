@@ -1,13 +1,16 @@
 package main
 
 import (
+	"html/template"
+	"io"
+	"net/http"
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	log "github.com/sirupsen/logrus"
-	"html/template"
-	"io"
-	"net/http"
+	"github.com/sombreroman55/blockles/game"
 )
 
 type GameInfo struct {
@@ -27,6 +30,15 @@ func newTemplates() *Templates {
 
 func (t *Templates) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	return t.templates.ExecuteTemplate(w, name, data)
+}
+
+func writeCookie(c echo.Context, key string, val string) error {
+	cookie := new(http.Cookie)
+	cookie.Name = key
+	cookie.Value = val
+	cookie.Expires = time.Now().Add(24 * time.Hour)
+	c.SetCookie(cookie)
+	return nil
 }
 
 func handleWstestGet(c echo.Context) error {
@@ -71,14 +83,17 @@ func handleNewSoloPost(c echo.Context) error {
 	next := c.FormValue("showNextQueue") == "on"
 	hold := c.FormValue("allowHold") == "on"
 
-	log.Printf("Options for game %s\n", title)
-	log.Println("---------------------------")
-	log.Printf("ghost: %v\n", ghost)
-	log.Printf("next:  %v\n", next)
-	log.Printf("hold:  %v\n", hold)
+	gmo := game.GameOptions{
+		ShowGhostPiece: ghost,
+		ShowNextQueue:  next,
+		EnableHolding:  hold,
+	}
+	opts := game.SoloBlocklesOptions{
+		GameOpts: gmo,
+	}
 
-	// TODO: Hook up to game logic here to kick off solo game
-	gameId := uuid.New()
+	gameId := game.NewSoloGame(title, opts)
+	writeCookie(c, "gameId", gameId.String())
 	gameUrl := "/solo?id=" + gameId.String()
 	c.Response().Header().Set("HX-Redirect", gameUrl)
 	c.Response().WriteHeader(303)
@@ -110,11 +125,20 @@ func handleNewMultiPost(c echo.Context) error {
 }
 
 func handleSoloGameGet(c echo.Context) error {
+	gameId := c.QueryParam("id")
+	gameInstance := game.GetSoloGame(uuid.MustParse(gameId))
+
 	gameInfo := GameInfo{
-		Title: "test game",
-		Id: c.QueryParam("id"),
+		Title: gameInstance.Name,
+		Id:    gameId,
 	}
 	return c.Render(http.StatusOK, "sologame", gameInfo)
+}
+
+func handleSoloGameWebsocket(c echo.Context) error {
+	// TODO: Add player to game here
+	// TODO: Hook up to webpage and start consuming player messages
+	return nil
 }
 
 func handleMultiGameGet(c echo.Context) error {
@@ -143,6 +167,8 @@ func serveBlockles() {
 	e.POST("/newsolo", handleNewSoloPost)
 
 	e.GET("/solo", handleSoloGameGet, gameExists)
+	e.GET("/solows", handleSoloGameWebsocket, gameExists)
+
 	e.GET("/multi", handleMultiGameGet, gameExists)
 
 	e.GET("/wstest", handleWstestGet)
@@ -153,5 +179,6 @@ func serveBlockles() {
 	e.POST("/newmulti", handleNewMultiPost)
 
 	e.Renderer = newTemplates()
+	game.InitGameManager()
 	e.Logger.Fatal(e.Start(":8000"))
 }
