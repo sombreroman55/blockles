@@ -4,27 +4,15 @@ package game
 
 import (
 	"github.com/google/uuid"
-	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 )
 
-var soloGames map[uuid.UUID]*SoloBlockles
+var games map[uuid.UUID]*Blockles
 var players map[uuid.UUID]*Player
 
 func InitGameManager() {
-	soloGames = make(map[uuid.UUID]*SoloBlockles)
+	games = make(map[uuid.UUID]*Blockles)
 	players = make(map[uuid.UUID]*Player)
-}
-
-func CreateNewPlayer(name string, conn *websocket.Conn) uuid.UUID {
-	log.Debug("Creating new player")
-	p := &Player{
-		name: name,
-		conn: conn,
-		id: uuid.New(),
-	}
-	players[p.id] = p
-	return p.id
 }
 
 func PlayerExists(id uuid.UUID) bool {
@@ -39,25 +27,31 @@ func DeletePlayer(id uuid.UUID) {
 	delete(players, id)
 }
 
-func NewSoloGame(name string, o SoloBlocklesOptions) uuid.UUID {
+func NewGame(name string, maxPlayers int, o GameOptions) uuid.UUID {
 	log.Debug("Creating new solo game")
-	game := &SoloBlockles{
-		Name:    name,
-		Options: o,
-		Id:      uuid.New(),
+	game := &Blockles{
+		Name:         name,
+		maxPlayers:   maxPlayers,
+		Options:      o,
+		Id:           uuid.New(),
+		players:      make(map[uuid.UUID]*Player),
+		commands:     make(chan []byte, 256),
+		stateUpdates: make(chan []byte, 256),
+		register:     make(chan *Player, 2),
+		unregister:   make(chan *Player, 2),
 	}
-	soloGames[game.Id] = game
+	games[game.Id] = game
 	return game.Id
 }
 
-func SoloGameExists(gameId uuid.UUID) bool {
-	return soloGames[gameId] != nil
+func GameExists(gameId uuid.UUID) bool {
+	return games[gameId] != nil
 }
 
-func GetSoloGame(gameId uuid.UUID) *SoloBlockles {
-	return soloGames[gameId]
+func GetGame(gameId uuid.UUID) *Blockles {
+	return games[gameId]
 }
 
-func EndSoloGame(gameId uuid.UUID) {
-	delete(soloGames, gameId)
+func EndGame(gameId uuid.UUID) {
+	delete(games, gameId)
 }
